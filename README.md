@@ -90,9 +90,70 @@ Java step-by-step visualisation program, written in 2016, for various sorting me
   ```
   <li><h3>Radix</h3></li>
   O(n) sorting algorithm that trades off space complexity for time, unsuitable for small datasets.
+  
+  ```Java
+  
+  final static int INT_SIZE = 4;
+	
+  final static byte BYTE_BIT_COUNT = 8;
+  final static short DIGITS_COUNT = 1 << BYTE_BIT_COUNT;
+  
+  private static int get_digit(int[] array, int index, int divisor) {
+	  final short BYTE_MASK = 0xFF;
+		
+	  return (array[index] >> divisor) & BYTE_MASK;
+  }
+	
+  public static void radix_sort(int[] array) {
+	  int[] result = new int[array.length];
+	  int[] counts = new int[DIGITS_COUNT];
+		
+	  int divisor = 0;
+      for(int radix = 0; radix < INT_SIZE; radix++) {
+          for(short i = 0; i < counts.length; i++)
+              counts[i] = 0;
+			
+          for(int i = 0; i < array.length; i++)
+              counts[get_digit(array, i, divisor)]++;
+			
+          for(short i = 0; i < counts.length - 1; i++)
+              counts[i + 1] += counts[i];
+			
+          for(int i = array.length - 1; i >= 0; i--)
+              result[counts[get_digit(array, i, divisor)]-- - 1] = array[i];
+			
+          int[] temp = array;
+          array = result;
+          result = temp;
+			
+          divisor += BYTE_BIT_COUNT;
+      }
+  }
+  ```
+  
   <li><h3>Bitonic</h3></li>
   O(nlog<sup>2</sup>(n)) highly parallelisable sorting algorithm. 
   <li><h3>Bubble</h3></li>
   O(n<sup>2</sup>) brute force sorting algorithm but with great cache utilisation, suitable for small datasets.
+  
+  ```Java
+  public static <T extends Comparable<T>> void bubble_sort(T[] array, int min, int end) {
+      for(int i = min; i < end; i++) {
+          boolean sorted = true;
+          for(int j = min; j < end - i - 1; j++) {
+              if(array[j].compareTo(array[j + 1]) > 0) {
+                  sorted = false;
+					
+                  T temp = array[j];
+                  array[j] = array[j + 1];
+                  array[j + 1] = temp;
+              }
+          }
+			
+          if(sorted) return;
+      }
+  }
+  
+  ```
 
 </ul>
